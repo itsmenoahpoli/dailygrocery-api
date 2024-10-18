@@ -1,43 +1,58 @@
-version: "3.8"
+version: "3"
 
 services:
-    app:
+    dailygrocery-api:
         build:
             context: .
             dockerfile: Dockerfile
-        container_name: laravel_app
+        container_name: app
         ports:
             - "8080:80"
         volumes:
             - .:/var/www/html
         networks:
-            - laravel_network
+            - dailygrocery_network
         environment:
             - DB_HOST=mysql
             - DB_PORT=3306
-            - DB_DATABASE=laravel_db
+            - DB_DATABASE=dailygrocerydb
             - DB_USERNAME=root
-            - DB_PASSWORD=root_password
+            - DB_PASSWORD=dailygrocerydb$$
         depends_on:
-            - mysql
+            - dailygrocery-mysql
 
-    mysql:
+    dailygrocery-mysql:
         image: mysql:8.0
-        container_name: mysql_db
+        container_name: mysql
         restart: unless-stopped
         environment:
-            MYSQL_ROOT_PASSWORD: root_password
-            MYSQL_DATABASE: laravel_db
+            MYSQL_ROOT_PASSWORD: dailygrocerydb$$
+            MYSQL_DATABASE: dailygrocerydb
         ports:
             - "3306:3306"
         volumes:
             - mysql_data:/var/lib/mysql
         networks:
-            - laravel_network
+            - dailygrocery_network
+
+    dailygrocery-phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpmyadmin
+        restart: unless-stopped
+        platform: linux/amd64
+        environment:
+            PMA_HOST: mysql
+            MYSQL_ROOT_PASSWORD: dailygrocerydb$$
+        ports:
+            - "8081:81"
+        depends_on:
+            - dailygrocery-mysql
+        networks:
+            - dailygrocery_network
 
 volumes:
     mysql_data:
 
 networks:
-    laravel_network:
+    dailygrocery_network:
         driver: bridge
