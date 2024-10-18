@@ -33,8 +33,8 @@ COPY . .
 # Set folder permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose port 80
-EXPOSE 80
+# Expose port 8000
+EXPOSE 8000
 
 # Start Apache in the foreground
 CMD ["apache2-foreground"]
